@@ -36,75 +36,6 @@ class ActiveLearnerBase(pl.LightningModule, abc.ABC):
     def set_n_samples(self, n_samples: int) -> None:
         self.n_samples = n_samples
 
-
-# class ClassificationActiveLearner(ActiveLearnerBase):
-#
-#     def __init__(self, net: ModelBase, n_classes: int):
-#         super().__init__()
-#         self.n_classes = n_classes
-#         self.net = net
-#         self.criterion = nn.CrossEntropyLoss()
-#
-#         self.train_accuracy = torchmetrics.Accuracy(num_classes=self.n_classes)
-#         self.val_accuracy   = torchmetrics.classification.Accuracy(num_classes=self.n_classes)
-#         self.test_accuracy  = torchmetrics.classification.Accuracy(num_classes=self.n_classes)
-#
-#         self.val_confusion_matrix = torchmetrics.classification.ConfusionMatrix(num_classes=self.n_classes, normalize='all')
-#         self.save_hyperparameters()
-#
-#     def forward(self, x):
-#         return self.net(x)
-#
-#     def forward_encoder(self, x: torch.Tensor) -> torch.Tensor:
-#         return self.net.forward_encoder(x)
-#
-#     def forward_head(self, x: torch.Tensor) -> torch.Tensor:
-#         return self.net.forward_head(x)
-#
-#     def training_step(self, batch, batch_idx):
-#         x, y = batch
-#         preds = self(x)
-#         loss = self.criterion(preds, y)
-#
-#         self.train_accuracy( torch.nn.Softmax()(preds), y)
-#         self.log(f'{self.n_samples}/Train_acc_step', self.train_accuracy, prog_bar=True, on_step=True, on_epoch=False)
-#         self.log(f'{self.n_samples}/Train_acc_epoch', self.train_accuracy, prog_bar=True, on_step=False, on_epoch=True)
-#
-#         self.log(f'{self.n_samples}/Train_loss_step', loss, on_step=True, on_epoch=False)
-#         self.log(f'{self.n_samples}/Train_loss_epoch', loss, on_step=False, on_epoch=True)
-#
-#         return loss
-#
-#     def evaluate(self, batch, stage=None):
-#         x, y = batch
-#         logits = self(x)
-#         loss = self.criterion(logits, y)
-#         preds = torch.argmax(logits, dim=1)
-#         acc = accuracy(preds, y)
-#
-#         if stage:
-#             self.log(f"{self.n_samples}/{stage}_loss", loss, prog_bar=True)
-#             self.log(f"{self.n_samples}/{stage}_acc", acc, prog_bar=True)
-#
-#     def validation_step(self, batch, batch_idx):
-#         self.evaluate(batch, 'Val')
-#
-#     def test_step(self, batch, batch_idx):
-#         self.evaluate(batch, 'Test')
-#
-#     def configure_optimizers(self):
-#         return torch.optim.Adam(self.parameters(), lr=0.001)
-#
-#     def get_type(self) -> str:
-#         return 'Random'
-#
-#     def forward_mc_dropout(self, x: torch.Tensor, n_times: int, training: bool = False) -> torch.Tensor:
-#         return self.net.forward_mc_dropout(x, n_times, training)
-#
-#     def reset_network(self) -> None:
-#         self.net.reset_network()
-
-
 class ClassificationActiveLearner(ActiveLearnerBase):
 
     def __init__(self, net: ModelBase, n_classes: int):
@@ -228,27 +159,14 @@ class UncertaintyClassificationActiveLearner(ClassificationActiveLearner):
 
             x = x.to(cfg.gpu)
             outs = self.net.forward_mc_dropout(x, 64, training=True)
-            #dist = torch.nn.PairwiseDistance()(outs, outs)
-            #negative_entropy = -200 * torch.sum(dist)
-            #mat = 1 - torch.nn.functional.cosine_similarity(outs, outs, dim=0)
-            #mat = cosine_distance_torch(outs)
-            #eye = torch.eye(64).to(mat.device)
-            #eye_zero = torch.abs(torch.eye(64).to(mat.device) - 1)
-            #negative_entropy = 0.0001 * torch.sum( eye_zero * ( eye - mat) ** 2)
 
             outs = torch.softmax(outs, dim=1)
             mean = torch.mean(outs, dim=0)
-            #negative_entropy = 0.01 * torch.max(mean)
-            #negative_entropy = 0.001 * torch.sum(mean * torch.log(mean))
-            # if y == 0:
-            #     negative_entropy *= -1
             H = -torch.sum(mean * torch.log(mean + 1e-10))
             E_H = -torch.mean(torch.sum(outs * torch.log(outs + 1e-10), dim=1), dim=0)
             negative_entropy = 0.01 * -(H - E_H)
 
             sum += negative_entropy
-
-        # sum.backward()
 
         return loss + sum
 
