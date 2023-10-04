@@ -1,6 +1,7 @@
 # Compute-Efficient Active Learning - Official Pytorch Implementation
 
 ## Prequisites:
+Tested using Python 3.8
 Use requirements.txt to install necessary dependencies.
 
 ## Running the Code
