@@ -79,11 +79,14 @@ class ClassificationActiveLearner(ActiveLearnerBase):
         logits = self(x)
         loss = self.criterion(logits, y)
         preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
+        if stage == 'Val':
+            acc = self.val_accuracy(preds, y)
+        elif stage == 'Test':
+            acc = self.test_accuracy(preds, y)
 
         if stage:
-            self.log(f"{self.n_samples}/{stage}_loss", loss, prog_bar=True)
-            self.log(f"{self.n_samples}/{stage}_acc", acc, prog_bar=True)
+            self.log(f"{self.n_samples}/{stage}_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+            self.log(f"{self.n_samples}/{stage}_acc", acc, on_step=False, on_epoch=True, prog_bar=True)
 
     def validation_step(self, batch, batch_idx):
         self.evaluate(batch, 'Val')
