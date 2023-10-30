@@ -62,7 +62,7 @@ class ActiveLearningTrainer:
 
             if self.use_best:
                 best_path = self._get_best_path(test_metrics_list, test_paths)
-                self.net = self.net.load_from_checkpoint(best_path)
+                self.net = type(self.net).load_from_checkpoint(best_path)
 
             # Log results and update dataset
             test_metrics_avg = self._avg_dict(test_metrics_list)
@@ -102,7 +102,7 @@ class ActiveLearningTrainer:
 
         trainer.fit(self.net, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
-        self.net = self.net.load_from_checkpoint(checkpoint_callback.best_model_path)
+        self.net = type(self.net).load_from_checkpoint(checkpoint_callback.best_model_path)
 
         if not self.use_best:
             os.remove(checkpoint_callback.best_model_path)
