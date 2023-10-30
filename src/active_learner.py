@@ -97,7 +97,7 @@ class ActiveLearningTrainer:
             mode="max",
         )
 
-        trainer = Trainer(gpus=[cfg.gpu], logger=self.logger, callbacks=[early_stopping, checkpoint_callback],
+        trainer = Trainer(devices=[cfg.gpu], logger=self.logger, callbacks=[early_stopping, checkpoint_callback],
                           log_every_n_steps=25, check_val_every_n_epoch=1, max_epochs=250)
 
         trainer.fit(self.net, train_dataloaders=train_loader, val_dataloaders=val_loader)

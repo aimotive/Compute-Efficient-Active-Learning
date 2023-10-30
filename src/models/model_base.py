@@ -44,11 +44,11 @@ class ClassificationActiveLearner(ActiveLearnerBase):
         self.net = net
         self.criterion = nn.CrossEntropyLoss()
 
-        self.train_accuracy = torchmetrics.Accuracy(num_classes=self.n_classes)
-        self.val_accuracy   = torchmetrics.classification.Accuracy(num_classes=self.n_classes)
-        self.test_accuracy  = torchmetrics.classification.Accuracy(num_classes=self.n_classes)
+        self.train_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=self.n_classes)
+        self.val_accuracy   = torchmetrics.classification.Accuracy(task="multiclass", num_classes=self.n_classes)
+        self.test_accuracy  = torchmetrics.classification.Accuracy(task="multiclass", num_classes=self.n_classes)
 
-        self.val_confusion_matrix = torchmetrics.classification.ConfusionMatrix(num_classes=self.n_classes, normalize='all')
+        self.val_confusion_matrix = torchmetrics.classification.ConfusionMatrix(task="multiclass", num_classes=self.n_classes, normalize='all')
         self.save_hyperparameters()
 
     def forward(self, x):
