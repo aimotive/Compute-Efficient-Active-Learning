@@ -10,3 +10,4 @@ scikit-learn
 wandb
 scipy
 tqdm
+pytorch-lightning
