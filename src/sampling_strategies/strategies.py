@@ -14,7 +14,8 @@ import cfg
 from data.data_factory import DataFactory
 from models.model_base import ActiveLearnerBase
 from utils import get_gpu
-from scipy.stats import entropy
+from scipy.stats import entropy, stats
+
 
 class SamplerBase(abc.ABC):
     def __init__(self,
@@ -288,6 +289,44 @@ class DiscriminativeSampler(SamplerBase):
         return np.array(confidences)
 
 
+class VariationRatioSampler(SamplerBase):
+    def __init__(self, all_indices: Sequence[int], start_ratio: Union[float, int], validation_size: int,
+                 acquisition_size: int, data_factory: DataFactory, subsample_unlabeled: bool, subsample_size, top_n: int):
+        super().__init__(all_indices, start_ratio, validation_size, acquisition_size,
+                         data_factory, subsample_unlabeled, subsample_size, top_n)
+        self.var_ratios = np.ones_like(self.all_indices)
+
+    def _get_unlabeled_values(self):
+        return self.var_ratios
+
+    def get_type(self) -> str:
+        return 'Variation ratio'
+
+    def choose_best_labels(self, net: ActiveLearnerBase, unlabeled_loader: DataLoader) -> Sequence[int]:
+        var_ratios = self.get_var_ratios(net, unlabeled_loader)
+        self.var_ratios = var_ratios
+        return np.argpartition(var_ratios, -self.acquisition_size)[-self.acquisition_size:]
+
+    def get_var_ratios(self, net: ActiveLearnerBase, unlabeled_loader: DataLoader) -> np.array:
+        net.net.to(cfg.gpu)
+        net.net.eval()
+        self._enable_dropout(net.net)
+        var_ratios = list()
+
+        for (x, _) in tqdm(unlabeled_loader):
+            with torch.no_grad():
+                x = x.to(cfg.gpu)
+                x_input = x.repeat(128, 1, 1, 1)
+                out = torch.nn.Softmax()(net(x_input))
+                y_pred = torch.argmax(out, dim=1)
+                mode_count = torch.max(torch.bincount(y_pred))
+                var_ratio = 1 - mode_count / 128
+                var_ratios.append(var_ratio.cpu())
+
+        self._disable_dropout(net.net)
+        return np.array(var_ratios)
+
+
 def get_sampler(strategy: str,
                 all_indices: Sequence[int],
                 start_ratio: float,
@@ -308,6 +347,8 @@ def get_sampler(strategy: str,
         return VarMaxSampler(all_indices, start_ratio, validation_size, acquisition_size, data_factory, subsample_unlabeled, subsample_size, top_n)
     elif strategy == 'discriminative':
         return DiscriminativeSampler(all_indices, start_ratio, validation_size, acquisition_size, data_factory, subsample_unlabeled, subsample_size, top_n)
+    elif strategy == 'var_ratio':
+        return VariationRatioSampler(all_indices, start_ratio, validation_size, acquisition_size, data_factory, subsample_unlabeled, subsample_size, top_n)
     else:
         raise NotImplementedError(f'Sampling method {strategy} not implemented')
 

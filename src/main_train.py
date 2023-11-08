@@ -20,7 +20,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, type=str, choices=['cifar10', 'mnist'])
     parser.add_argument('--data-root', default=None, type=Path)
-    parser.add_argument('--strategy', default='random', type=str, choices=['random', 'entropy', 'entropy_kmeans', 'discriminative', 'varmax'])
+    parser.add_argument('--strategy', default='random', type=str, choices=['random', 'entropy', 'entropy_kmeans', 'discriminative', 'varmax', 'var_ratio'])
     parser.add_argument('--batch-size', default=64, type=int)
     parser.add_argument('--acquisition-size', default=500, type=int)
     parser.add_argument('--subsample-unlabeled', action='store_true')
