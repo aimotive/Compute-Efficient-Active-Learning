@@ -7,12 +7,12 @@ Use requirements.txt to install necessary dependencies.
 ## Running the Code
 Example on MNIST:
 ```
-python3 src/main_train.py --dataset mnist --strategy entropy --subsample-size 5000
+python3 src/main_train.py --dataset mnist --strategy entropy --subsample-size 5000 --subsample-unlabeled
 ```
 
 Example on CIFAR10:
 ```
-python3 src/main_train.py --dataset cifar10 --strategy entropy --subsample-size 10000
+python3 src/main_train.py --dataset cifar10 --strategy entropy --subsample-size 10000 --subsample-unlabeled
 ```
 
 ## Citation
