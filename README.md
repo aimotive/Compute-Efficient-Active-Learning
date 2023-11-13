@@ -18,6 +18,14 @@ python3 src/main_train.py --dataset cifar10 --strategy entropy --subsample-size 
 ## Citation
 If you use our code in your research, or find our work helpful, please consider citing us with the bibtex below:
 ```
+@inproceedings{
+n{\'e}meth2023computeefficient,
+title={Compute-Efficient Active Learning},
+author={G{\'a}bor N{\'e}meth and Tamas Matuszka},
+booktitle={NeurIPS 2023 Workshop on Adaptive Experimental Design and Active Learning in the Real World},
+year={2023},
+url={https://openreview.net/forum?id=G6ujG6LaKV}
+}
 ```
 
 
