@@ -63,35 +63,6 @@ class DataFactory:
             pin_memory=True
         )
 
-    # def get_train_loaders_from_indices(self, indices: List[int]) -> Tuple[DataLoader, DataLoader]:
-    #     """
-    #     Returns (train_loader, val_loader)
-    #     """
-    #     train_indices, val_indices = train_test_split(indices, test_size=self.validation_split)
-    #
-    #     train_sampler = SubsetRandomSampler(train_indices)
-    #     val_sampler   = SubsetRandomSampler(val_indices)
-    #
-    #     train_loader = DataLoader(
-    #                     self.train_dataset_augmented,
-    #                     batch_size=self.batch_size,
-    #                     sampler=train_sampler,
-    #                     num_workers=4,
-    #                     drop_last=False,
-    #                     pin_memory=True
-    #                 )
-    #
-    #     val_loader = DataLoader(
-    #                     self.train_dataset_not_augmented,
-    #                     batch_size=self.batch_size,
-    #                     sampler=val_sampler,
-    #                     num_workers=4,
-    #                     drop_last=False,
-    #                     pin_memory=True
-    #                 )
-    #
-    #     return train_loader, val_loader
-
     def get_train_loaders_from_indices(self, train_indices: List[int], val_indices: List[int]) -> Tuple[DataLoader, DataLoader]:
         """
         Returns (train_loader, val_loader)
