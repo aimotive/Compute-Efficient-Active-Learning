@@ -1,4 +1,4 @@
-# Compute-Efficient Active Learning - Official Pytorch Implementation
+# Compute-Efficient Active Learning - Official PyTorch Implementation
 
 ## Prequisites:
 Tested using Python 3.8
@@ -16,7 +16,7 @@ python3 src/main_train.py --dataset cifar10 --strategy entropy --subsample-size 
 ```
 
 ## Citation
-If you use our code in your research, or find our work helpful, please consider citing us with the bibtex below:
+If you use our code in your research, or find [our work](https://nips.cc/virtual/2023/78767) helpful, please consider citing us with the bibtex below:
 ```
 @inproceedings{
 n{\'e}meth2023computeefficient,
@@ -27,6 +27,7 @@ year={2023},
 url={https://openreview.net/forum?id=G6ujG6LaKV}
 }
 ```
+More details about our work can be found on the [paper](https://nips.cc/media/neurips-2023/Slides/78767_7FrbVd0.pdf) and [poster](https://nips.cc/media/PosterPDFs/NeurIPS%202023/78767.png?t=1701339795.426551).
 
 
 ## License
