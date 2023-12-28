@@ -16,7 +16,7 @@ python3 src/main_train.py --dataset cifar10 --strategy entropy --subsample-size 
 ```
 
 ## Citation
-If you use our code in your research, or find [our work](https://nips.cc/virtual/2023/78767) helpful, please consider citing us with the bibtex below:
+If you use our code in your research, or find [our](https://nips.cc/virtual/2023/78767) [work](https://openreview.net/forum?id=G6ujG6LaKV) helpful, please consider citing us with the bibtex below:
 ```
 @inproceedings{
 n{\'e}meth2023computeefficient,
